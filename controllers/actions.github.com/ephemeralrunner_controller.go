@@ -536,7 +536,7 @@ func (r *EphemeralRunnerReconciler) createSecret(ctx context.Context, runner *v1
 	}
 
 	log.Info("Created ephemeral runner secret", "secretName", jitSecret.Name)
-	return ctrl.Result{}, nil
+	return ctrl.Result{RequeueAfter: 1 * time.Second}, nil
 }
 
 // updateRunStatusFromPod is responsible for updating non-exiting statuses.
@@ -627,7 +627,7 @@ func (r *EphemeralRunnerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.EphemeralRunner{}).
 		Owns(&corev1.Pod{}).
-		Owns(&corev1.Secret{}).
+		// Owns(&corev1.Secret{}).
 		WithEventFilter(predicate.ResourceVersionChangedPredicate{}).
 		Named("ephemeral-runner-controller").
 		Complete(r)

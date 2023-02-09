@@ -72,12 +72,32 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "actions-runner-controller-2.managerRoleName" -}}
-{{- include "actions-runner-controller-2.fullname" . }}-manager-role
+{{- define "actions-runner-controller-2.managerCrdClusterRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cc-role
 {{- end }}
 
-{{- define "actions-runner-controller-2.managerRoleBinding" -}}
-{{- include "actions-runner-controller-2.fullname" . }}-manager-rolebinding
+{{- define "actions-runner-controller-2.managerCrdClusterRoleBinding" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cc-rolebinding
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerWatchClusterRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-wc-role
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerWatchClusterRoleBinding" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-wc-rolebinding
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerControllerNamespaceRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cn-role
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerControllerNamespaceRoleBinding" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cn-rolebinding
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerRuntimeClusterRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-rc-role
 {{- end }}
 
 {{- define "actions-runner-controller-2.leaderElectionRoleName" -}}
