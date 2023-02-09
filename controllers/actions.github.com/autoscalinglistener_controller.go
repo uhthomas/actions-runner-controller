@@ -50,6 +50,7 @@ type AutoscalingListenerReconciler struct {
 	client.Client
 	Log    logr.Logger
 	Scheme *runtime.Scheme
+	Reader client.Reader
 
 	resourceBuilder resourceBuilder
 }
@@ -125,7 +126,7 @@ func (r *AutoscalingListenerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	// Check if the GitHub config secret exists
 	secret := new(corev1.Secret)
-	if err := r.Get(ctx, types.NamespacedName{Namespace: autoscalingListener.Spec.AutoscalingRunnerSetNamespace, Name: autoscalingListener.Spec.GitHubConfigSecret}, secret); err != nil {
+	if err := r.Reader.Get(ctx, types.NamespacedName{Namespace: autoscalingListener.Spec.AutoscalingRunnerSetNamespace, Name: autoscalingListener.Spec.GitHubConfigSecret}, secret); err != nil {
 		log.Error(err, "Failed to find GitHub config secret.",
 			"namespace", autoscalingListener.Spec.AutoscalingRunnerSetNamespace,
 			"name", autoscalingListener.Spec.GitHubConfigSecret)
@@ -134,7 +135,7 @@ func (r *AutoscalingListenerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	// Create a mirror secret in the same namespace as the AutoscalingListener
 	mirrorSecret := new(corev1.Secret)
-	if err := r.Get(ctx, types.NamespacedName{Namespace: autoscalingListener.Namespace, Name: scaleSetListenerSecretMirrorName(autoscalingListener)}, mirrorSecret); err != nil {
+	if err := r.Reader.Get(ctx, types.NamespacedName{Namespace: autoscalingListener.Namespace, Name: scaleSetListenerSecretMirrorName(autoscalingListener)}, mirrorSecret); err != nil {
 		if !kerrors.IsNotFound(err) {
 			log.Error(err, "Unable to get listener secret mirror", "namespace", autoscalingListener.Namespace, "name", scaleSetListenerSecretMirrorName(autoscalingListener))
 			return ctrl.Result{}, err
@@ -392,7 +393,7 @@ func (r *AutoscalingListenerReconciler) updateSecretsForListener(ctx context.Con
 	}
 
 	logger.Info("Updated listener mirror secret", "namespace", updatedMirrorSecret.Namespace, "name", updatedMirrorSecret.Name, "hash", dataHash)
-	return ctrl.Result{}, nil
+	return ctrl.Result{RequeueAfter: 1 * time.Second}, nil
 }
 
 func (r *AutoscalingListenerReconciler) createRoleForListener(ctx context.Context, autoscalingListener *v1alpha1.AutoscalingListener, logger logr.Logger) (ctrl.Result, error) {

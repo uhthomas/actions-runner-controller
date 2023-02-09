@@ -349,6 +349,7 @@ func main() {
 		DefaultRunnerScaleSetListenerImage: mgrContainer.Image,
 		ActionsClient:                      actionsMultiClient,
 		DefaultRunnerScaleSetListenerImagePullSecrets: autoScalerImagePullSecrets,
+		Reader: mgr.GetAPIReader(),
 	}).SetupWithManager(mgr); err != nil {
 		log.Error(err, "unable to create controller", "controller", "AutoscalingRunnerSet")
 		os.Exit(1)
@@ -359,6 +360,7 @@ func main() {
 		Log:           log.WithName("EphemeralRunner"),
 		Scheme:        mgr.GetScheme(),
 		ActionsClient: actionsMultiClient,
+		Reader:        mgr.GetAPIReader(),
 	}).SetupWithManager(mgr); err != nil {
 		log.Error(err, "unable to create controller", "controller", "EphemeralRunner")
 		os.Exit(1)
@@ -369,6 +371,7 @@ func main() {
 		Log:           log.WithName("EphemeralRunnerSet"),
 		Scheme:        mgr.GetScheme(),
 		ActionsClient: actionsMultiClient,
+		Reader:        mgr.GetAPIReader(),
 	}).SetupWithManager(mgr); err != nil {
 		log.Error(err, "unable to create controller", "controller", "EphemeralRunnerSet")
 		os.Exit(1)
@@ -377,6 +380,7 @@ func main() {
 		Client: mgr.GetClient(),
 		Log:    log.WithName("AutoscalingListener"),
 		Scheme: mgr.GetScheme(),
+		Reader: mgr.GetAPIReader(),
 	}).SetupWithManager(mgr); err != nil {
 		log.Error(err, "unable to create controller", "controller", "AutoscalingListener")
 		os.Exit(1)

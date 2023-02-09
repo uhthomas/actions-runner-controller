@@ -53,6 +53,7 @@ type EphemeralRunnerReconciler struct {
 	Scheme          *runtime.Scheme
 	ActionsClient   actions.MultiClient
 	resourceBuilder resourceBuilder
+	Reader          client.Reader
 }
 
 // +kubebuilder:rbac:groups=actions.github.com,resources=ephemeralrunners,verbs=get;list;watch;create;update;patch;delete
@@ -140,7 +141,7 @@ func (r *EphemeralRunnerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	}
 
 	secret := new(corev1.Secret)
-	if err := r.Get(ctx, req.NamespacedName, secret); err != nil {
+	if err := r.Reader.Get(ctx, req.NamespacedName, secret); err != nil {
 		if !kerrors.IsNotFound(err) {
 			log.Error(err, "Failed to fetch secret")
 			return ctrl.Result{}, err
@@ -256,7 +257,7 @@ func (r *EphemeralRunnerReconciler) cleanupResources(ctx context.Context, epheme
 
 	log.Info("Cleaning up the runner jitconfig secret")
 	secret := new(corev1.Secret)
-	err = r.Get(ctx, types.NamespacedName{Namespace: ephemeralRunner.Namespace, Name: ephemeralRunner.Name}, secret)
+	err = r.Reader.Get(ctx, types.NamespacedName{Namespace: ephemeralRunner.Namespace, Name: ephemeralRunner.Name}, secret)
 	switch {
 	case err == nil:
 		if secret.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -336,7 +337,7 @@ func (r *EphemeralRunnerReconciler) cleanupRunnerLinkedSecrets(ctx context.Conte
 		},
 	)
 	var runnerLinkedSecretList corev1.SecretList
-	err = r.List(ctx, &runnerLinkedSecretList, client.InNamespace(ephemeralRunner.Namespace), runnerLinkedLabels)
+	err = r.Reader.List(ctx, &runnerLinkedSecretList, client.InNamespace(ephemeralRunner.Namespace), runnerLinkedLabels)
 	if err != nil {
 		return false, fmt.Errorf("failed to list runner-linked secrets: %w", err)
 	}
@@ -569,7 +570,7 @@ func (r *EphemeralRunnerReconciler) updateRunStatusFromPod(ctx context.Context, 
 
 func (r *EphemeralRunnerReconciler) actionsClientFor(ctx context.Context, runner *v1alpha1.EphemeralRunner) (actions.ActionsService, error) {
 	secret := new(corev1.Secret)
-	if err := r.Get(ctx, types.NamespacedName{Namespace: runner.Namespace, Name: runner.Spec.GitHubConfigSecret}, secret); err != nil {
+	if err := r.Reader.Get(ctx, types.NamespacedName{Namespace: runner.Namespace, Name: runner.Spec.GitHubConfigSecret}, secret); err != nil {
 		return nil, fmt.Errorf("failed to get secret: %w", err)
 	}
 

@@ -65,6 +65,8 @@ type AutoscalingRunnerSetReconciler struct {
 	DefaultRunnerScaleSetListenerImagePullSecrets []string
 	ActionsClient                                 actions.MultiClient
 
+	Reader client.Reader
+
 	resourceBuilder resourceBuilder
 }
 
@@ -165,7 +167,7 @@ func (r *AutoscalingRunnerSetReconciler) Reconcile(ctx context.Context, req ctrl
 	}
 
 	secret := new(corev1.Secret)
-	if err := r.Get(ctx, types.NamespacedName{Namespace: autoscalingRunnerSet.Namespace, Name: autoscalingRunnerSet.Spec.GitHubConfigSecret}, secret); err != nil {
+	if err := r.Reader.Get(ctx, types.NamespacedName{Namespace: autoscalingRunnerSet.Namespace, Name: autoscalingRunnerSet.Spec.GitHubConfigSecret}, secret); err != nil {
 		log.Error(err, "Failed to find GitHub config secret.",
 			"namespace", autoscalingRunnerSet.Namespace,
 			"name", autoscalingRunnerSet.Spec.GitHubConfigSecret)
@@ -302,11 +304,13 @@ func (r *AutoscalingRunnerSetReconciler) deleteEphemeralRunnerSets(ctx context.C
 
 func (r *AutoscalingRunnerSetReconciler) createRunnerScaleSet(ctx context.Context, autoscalingRunnerSet *v1alpha1.AutoscalingRunnerSet, logger logr.Logger) (ctrl.Result, error) {
 	logger.Info("Creating a new runner scale set")
-	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet)
+	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet, logger)
 	if err != nil {
 		logger.Error(err, "Failed to initialize Actions service client for creating a new runner scale set")
 		return ctrl.Result{}, err
 	}
+
+	logger.Info("Creating a new runner scale set in Actions service")
 	runnerScaleSet, err := actionsClient.GetRunnerScaleSet(ctx, autoscalingRunnerSet.Name)
 	if err != nil {
 		logger.Error(err, "Failed to get runner scale set from Actions service")
@@ -372,7 +376,7 @@ func (r *AutoscalingRunnerSetReconciler) updateRunnerScaleSetRunnerGroup(ctx con
 		return ctrl.Result{}, err
 	}
 
-	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet)
+	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet, logger)
 	if err != nil {
 		logger.Error(err, "Failed to initialize Actions service client for updating a existing runner scale set")
 		return ctrl.Result{}, err
@@ -418,7 +422,7 @@ func (r *AutoscalingRunnerSetReconciler) deleteRunnerScaleSet(ctx context.Contex
 		return nil
 	}
 
-	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet)
+	actionsClient, err := r.actionsClientFor(ctx, autoscalingRunnerSet, logger)
 	if err != nil {
 		logger.Error(err, "Failed to initialize Actions service client for updating a existing runner scale set")
 		return err
@@ -489,12 +493,14 @@ func (r *AutoscalingRunnerSetReconciler) listEphemeralRunnerSets(ctx context.Con
 	return &EphemeralRunnerSets{list: list}, nil
 }
 
-func (r *AutoscalingRunnerSetReconciler) actionsClientFor(ctx context.Context, autoscalingRunnerSet *v1alpha1.AutoscalingRunnerSet) (actions.ActionsService, error) {
+func (r *AutoscalingRunnerSetReconciler) actionsClientFor(ctx context.Context, autoscalingRunnerSet *v1alpha1.AutoscalingRunnerSet, logger logr.Logger) (actions.ActionsService, error) {
+	logger.Info("Get secret...")
 	var configSecret corev1.Secret
-	if err := r.Get(ctx, types.NamespacedName{Namespace: autoscalingRunnerSet.Namespace, Name: autoscalingRunnerSet.Spec.GitHubConfigSecret}, &configSecret); err != nil {
+	if err := r.Reader.Get(ctx, types.NamespacedName{Namespace: autoscalingRunnerSet.Namespace, Name: autoscalingRunnerSet.Spec.GitHubConfigSecret}, &configSecret); err != nil {
 		return nil, fmt.Errorf("failed to find GitHub config secret: %w", err)
 	}
 
+	logger.Info("Get client from secret...")
 	return r.ActionsClient.GetClientFromSecret(ctx, autoscalingRunnerSet.Spec.GitHubConfigUrl, autoscalingRunnerSet.Namespace, configSecret.Data)
 }
 
