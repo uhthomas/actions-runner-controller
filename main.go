@@ -39,6 +39,7 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -164,6 +165,9 @@ func main() {
 		Port:               port,
 		SyncPeriod:         &syncPeriod,
 		Namespace:          namespace,
+		ClientDisableCacheFor: []client.Object{
+			&corev1.Secret{},
+		},
 	})
 	if err != nil {
 		log.Error(err, "unable to start manager")

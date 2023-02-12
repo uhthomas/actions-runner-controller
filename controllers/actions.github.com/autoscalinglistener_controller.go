@@ -282,7 +282,6 @@ func (r *AutoscalingListenerReconciler) SetupWithManager(mgr ctrl.Manager) error
 		For(&v1alpha1.AutoscalingListener{}).
 		Owns(&corev1.Pod{}).
 		Owns(&corev1.ServiceAccount{}).
-		Owns(&corev1.Secret{}).
 		Watches(&source.Kind{Type: &rbacv1.Role{}}, handler.EnqueueRequestsFromMapFunc(labelBasedWatchFunc)).
 		Watches(&source.Kind{Type: &rbacv1.RoleBinding{}}, handler.EnqueueRequestsFromMapFunc(labelBasedWatchFunc)).
 		WithEventFilter(predicate.ResourceVersionChangedPredicate{}).
@@ -375,7 +374,7 @@ func (r *AutoscalingListenerReconciler) createSecretsForListener(ctx context.Con
 	}
 
 	logger.Info("Created listener secret", "namespace", newListenerSecret.Namespace, "name", newListenerSecret.Name)
-	return ctrl.Result{}, nil
+	return ctrl.Result{Requeue: true}, nil
 }
 
 func (r *AutoscalingListenerReconciler) updateSecretsForListener(ctx context.Context, secret *corev1.Secret, mirrorSecret *corev1.Secret, logger logr.Logger) (ctrl.Result, error) {
@@ -391,7 +390,7 @@ func (r *AutoscalingListenerReconciler) updateSecretsForListener(ctx context.Con
 	}
 
 	logger.Info("Updated listener mirror secret", "namespace", updatedMirrorSecret.Namespace, "name", updatedMirrorSecret.Name, "hash", dataHash)
-	return ctrl.Result{}, nil
+	return ctrl.Result{Requeue: true}, nil
 }
 
 func (r *AutoscalingListenerReconciler) createRoleForListener(ctx context.Context, autoscalingListener *v1alpha1.AutoscalingListener, logger logr.Logger) (ctrl.Result, error) {
