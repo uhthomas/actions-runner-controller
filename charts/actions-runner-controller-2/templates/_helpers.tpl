@@ -72,12 +72,20 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "actions-runner-controller-2.managerRoleName" -}}
-{{- include "actions-runner-controller-2.fullname" . }}-manager-role
+{{- define "actions-runner-controller-2.managerClusterRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cc-role
 {{- end }}
 
-{{- define "actions-runner-controller-2.managerRoleBinding" -}}
-{{- include "actions-runner-controller-2.fullname" . }}-manager-rolebinding
+{{- define "actions-runner-controller-2.managerClusterRoleBinding" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-cc-rolebinding
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerRuntimeClusterRoleName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-rc-role
+{{- end }}
+
+{{- define "actions-runner-controller-2.managerRuntimeRoleBindingName" -}}
+{{- include "actions-runner-controller-2.fullname" . }}-manager-rc-rolebinding
 {{- end }}
 
 {{- define "actions-runner-controller-2.leaderElectionRoleName" -}}

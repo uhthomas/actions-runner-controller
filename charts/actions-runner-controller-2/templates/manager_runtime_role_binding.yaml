@@ -1,11 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: {{ include "actions-runner-controller-2.managerRoleBinding" . }}
+  name: {{ include "actions-runner-controller-2.managerRuntimeRoleBindingName" . }}
+  namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "actions-runner-controller-2.managerRoleName" . }}
+  name: {{ include "actions-runner-controller-2.managerRuntimeClusterRoleName" . }}
 subjects:
 - kind: ServiceAccount
   name: {{ include "actions-runner-controller-2.serviceAccountName" . }}

@@ -1,0 +1,48 @@
+{{ $counter := 0 }}
+{{ $controllerDeployment := "" }}
+{{ $managerServiceAccountName := "" }}
+{{ $managerServiceAccountNamespace := "" }}
+{{ $managerRuntimeClusterRole := "" }}
+{{ range $index, $deployment := (lookup "apps/v1" "Deployment" "" "").items }}
+  {{- range $key, $val := $deployment.metadata.labels }}
+    {{- if and (eq $key "app.kubernetes.io/part-of") (eq $val "actions-runner-controller-2") }}
+      {{- $counter = add $counter 1 }}
+      {{- $controllerDeployment = $deployment }}
+    {{- end }}
+  {{- end }}
+{{ end }}
+{{ if lt $counter 1 }}
+  {{ fail "No actions-runner-controller-2 deployment found" }}
+{{ end }}
+{{ if gt $counter 1 }}
+  {{ fail "More than one actions-runner-controller-2 deployment found" }}
+{{ end }}
+{{ $managerServiceAccountName = $controllerDeployment.spec.template.spec.serviceAccountName }}
+{{ $managerServiceAccountNamespace = $controllerDeployment.metadata.namespace }}
+{{ if eq $managerServiceAccountName "" }}
+  {{ fail "No actions-runner-controller-2 deployment found with a service account name" }}
+{{ end }}
+{{ if eq $managerServiceAccountNamespace "" }}
+  {{ fail "No actions-runner-controller-2 deployment found with a service account namespace" }}
+{{ end }}
+{{- range $key, $val := $controllerDeployment.metadata.labels }}
+  {{- if eq $key "actions.github.com/manager-runtime-cluster-role" }}
+    {{- $managerRuntimeClusterRole = $val }}
+  {{- end }}
+{{- end }}
+{{ if eq $managerRuntimeClusterRole "" }}
+  {{ fail "No actions-runner-controller-2 deployment found with a manager-runtime-cluster-role label" }}
+{{ end }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "auto-scaling-runner-set.managerRuntimeRoleBinding" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $managerRuntimeClusterRole }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $managerServiceAccountName }}
+  namespace: {{ $managerServiceAccountNamespace }}

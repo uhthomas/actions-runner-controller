@@ -319,3 +319,7 @@ volumeMounts:
   {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "auto-scaling-runner-set.managerRuntimeRoleBinding" -}}
+{{- include "auto-scaling-runner-set.fullname" . }}-manager-runtime-rolebinding
+{{- end }}
