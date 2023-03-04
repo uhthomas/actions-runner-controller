@@ -27,8 +27,10 @@ func TestTemplateRenderedGitHubSecretWithGitHubToken(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -60,6 +62,8 @@ func TestTemplateRenderedGitHubSecretWithGitHubApp(t *testing.T) {
 			"githubConfigSecret.github_app_id":              "10",
 			"githubConfigSecret.github_app_installation_id": "100",
 			"githubConfigSecret.github_app_private_key":     "private_key",
+			"controllerServiceAccount.name":                 "arc",
+			"controllerServiceAccount.namespace":            "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -87,9 +91,11 @@ func TestTemplateRenderedGitHubSecretErrorWithMissingAuthInput(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                  "https://github.com/actions",
-			"githubConfigSecret.github_app_id": "",
-			"githubConfigSecret.github_token":  "",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_app_id":   "",
+			"githubConfigSecret.github_token":    "",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -112,8 +118,10 @@ func TestTemplateRenderedGitHubSecretErrorWithMissingAppInput(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                  "https://github.com/actions",
-			"githubConfigSecret.github_app_id": "10",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_app_id":   "10",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -136,8 +144,10 @@ func TestTemplateNotRenderedGitHubSecretWithPredefinedSecret(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":    "https://github.com/actions",
-			"githubConfigSecret": "pre-defined-secret",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret":                 "pre-defined-secret",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -158,8 +168,10 @@ func TestTemplateRenderedSetServiceAccountToNoPermission(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -190,9 +202,11 @@ func TestTemplateRenderedSetServiceAccountToKubeMode(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"containerMode.type":              "kubernetes",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"containerMode.type":                 "kubernetes",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -248,9 +262,11 @@ func TestTemplateRenderedUserProvideSetServiceAccount(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                  "https://github.com/actions",
-			"githubConfigSecret.github_token":  "gh_token12345",
-			"template.spec.serviceAccountName": "test-service-account",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"template.spec.serviceAccountName":   "test-service-account",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -277,8 +293,10 @@ func TestTemplateRenderedAutoScalingRunnerSet(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -328,6 +346,8 @@ func TestTemplateRenderedAutoScalingRunnerSet_ProvideMetadata(t *testing.T) {
 			"template.metadata.labels.test2":      "test2",
 			"template.metadata.annotations.test3": "test3",
 			"template.metadata.annotations.test4": "test4",
+			"controllerServiceAccount.name":       "arc",
+			"controllerServiceAccount.namespace":  "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -367,9 +387,11 @@ func TestTemplateRenderedAutoScalingRunnerSet_MaxRunnersValidationError(t *testi
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"maxRunners":                      "-1",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"maxRunners":                         "-1",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -392,10 +414,12 @@ func TestTemplateRenderedAutoScalingRunnerSet_MinRunnersValidationError(t *testi
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"maxRunners":                      "1",
-			"minRunners":                      "-1",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"maxRunners":                         "1",
+			"minRunners":                         "-1",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -418,10 +442,12 @@ func TestTemplateRenderedAutoScalingRunnerSet_MinMaxRunnersValidationError(t *te
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"maxRunners":                      "0",
-			"minRunners":                      "1",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"maxRunners":                         "0",
+			"minRunners":                         "1",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -444,10 +470,12 @@ func TestTemplateRenderedAutoScalingRunnerSet_MinMaxRunnersValidationSameValue(t
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"maxRunners":                      "0",
-			"minRunners":                      "0",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"maxRunners":                         "0",
+			"minRunners":                         "0",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -473,9 +501,11 @@ func TestTemplateRenderedAutoScalingRunnerSet_MinMaxRunnersValidation_OnlyMin(t 
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"minRunners":                      "5",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"minRunners":                         "5",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -501,9 +531,11 @@ func TestTemplateRenderedAutoScalingRunnerSet_MinMaxRunnersValidation_OnlyMax(t 
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"maxRunners":                      "5",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"maxRunners":                         "5",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -556,9 +588,11 @@ func TestTemplateRenderedAutoScalingRunnerSet_EnableDinD(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"containerMode.type":              "dind",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"containerMode.type":                 "dind",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -639,9 +673,11 @@ func TestTemplateRenderedAutoScalingRunnerSet_EnableKubernetesMode(t *testing.T)
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret.github_token": "gh_token12345",
-			"containerMode.type":              "kubernetes",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"containerMode.type":                 "kubernetes",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -694,8 +730,10 @@ func TestTemplateRenderedAutoScalingRunnerSet_UsePredefinedSecret(t *testing.T) 
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":    "https://github.com/actions",
-			"githubConfigSecret": "pre-defined-secrets",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret":                 "pre-defined-secrets",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -726,8 +764,10 @@ func TestTemplateRenderedAutoScalingRunnerSet_ErrorOnEmptyPredefinedSecret(t *te
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":    "https://github.com/actions",
-			"githubConfigSecret": "",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret":                 "",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -750,13 +790,15 @@ func TestTemplateRenderedWithProxy(t *testing.T) {
 
 	options := &helm.Options{
 		SetValues: map[string]string{
-			"githubConfigUrl":                 "https://github.com/actions",
-			"githubConfigSecret":              "pre-defined-secrets",
-			"proxy.http.url":                  "http://proxy.example.com",
-			"proxy.http.credentialSecretRef":  "http-secret",
-			"proxy.https.url":                 "https://proxy.example.com",
-			"proxy.https.credentialSecretRef": "https-secret",
-			"proxy.noProxy":                   "{example.com,example.org}",
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret":                 "pre-defined-secrets",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
+			"proxy.http.url":                     "http://proxy.example.com",
+			"proxy.http.credentialSecretRef":     "http-secret",
+			"proxy.https.url":                    "https://proxy.example.com",
+			"proxy.https.credentialSecretRef":    "https-secret",
+			"proxy.noProxy":                      "{example.com,example.org}",
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 	}
@@ -789,8 +831,10 @@ func TestTemplateNamingConstraints(t *testing.T) {
 	require.NoError(t, err)
 
 	setValues := map[string]string{
-		"githubConfigUrl":    "https://github.com/actions",
-		"githubConfigSecret": "",
+		"githubConfigUrl":                    "https://github.com/actions",
+		"githubConfigSecret":                 "",
+		"controllerServiceAccount.name":      "arc",
+		"controllerServiceAccount.namespace": "arc-system",
 	}
 
 	tt := map[string]struct {
@@ -821,4 +865,66 @@ func TestTemplateNamingConstraints(t *testing.T) {
 			assert.ErrorContains(t, err, tc.expectedError)
 		})
 	}
+}
+
+func TestTemplate_CreateManagerRole(t *testing.T) {
+	t.Parallel()
+
+	// Path to the helm chart we will test
+	helmChartPath, err := filepath.Abs("../../gha-runner-scale-set")
+	require.NoError(t, err)
+
+	releaseName := "test-runners"
+	namespaceName := "test-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		SetValues: map[string]string{
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
+		},
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(t, options, helmChartPath, releaseName, []string{"templates/manager_role.yaml"})
+
+	var managerRole rbacv1.Role
+	helm.UnmarshalK8SYaml(t, output, &managerRole)
+
+	assert.Equal(t, namespaceName, managerRole.Namespace, "namespace should match the namespace of the Helm release")
+	assert.Equal(t, "test-runners-gha-runner-scale-set-manager-role", managerRole.Name)
+	assert.Equal(t, 6, len(managerRole.Rules))
+}
+
+func TestTemplate_CreateManagerRoleBinding(t *testing.T) {
+	t.Parallel()
+
+	// Path to the helm chart we will test
+	helmChartPath, err := filepath.Abs("../../gha-runner-scale-set")
+	require.NoError(t, err)
+
+	releaseName := "test-runners"
+	namespaceName := "test-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		SetValues: map[string]string{
+			"githubConfigUrl":                    "https://github.com/actions",
+			"githubConfigSecret.github_token":    "gh_token12345",
+			"controllerServiceAccount.name":      "arc",
+			"controllerServiceAccount.namespace": "arc-system",
+		},
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(t, options, helmChartPath, releaseName, []string{"templates/manager_role_binding.yaml"})
+
+	var managerRoleBinding rbacv1.RoleBinding
+	helm.UnmarshalK8SYaml(t, output, &managerRoleBinding)
+
+	assert.Equal(t, namespaceName, managerRoleBinding.Namespace, "namespace should match the namespace of the Helm release")
+	assert.Equal(t, "test-runners-gha-runner-scale-set-manager-role-binding", managerRoleBinding.Name)
+	assert.Equal(t, "test-runners-gha-runner-scale-set-manager-role", managerRoleBinding.RoleRef.Name)
+	assert.Equal(t, "arc", managerRoleBinding.Subjects[0].Name)
+	assert.Equal(t, "arc-system", managerRoleBinding.Subjects[0].Namespace)
 }
