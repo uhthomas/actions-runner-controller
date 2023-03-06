@@ -1,3 +1,4 @@
+{{- if empty .Values.flags.watchSingleNamespace }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -135,3 +136,4 @@ rules:
   verbs:
   - list
   - watch
+{{- end }}

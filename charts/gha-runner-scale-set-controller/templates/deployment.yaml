@@ -53,6 +53,9 @@ spec:
         {{- with .Values.flags.logLevel }}
         - "--log-level={{ . }}"
         {{- end }}
+        {{- with .Values.flags.watchSingleNamespace }}
+        - "--watch-namespace={{ . }}"
+        {{- end }}
         command:
         - "/manager"
         env:
